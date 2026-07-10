@@ -212,6 +212,20 @@
     return categories.map(c => (c === value ? 1 : 0));
   }
 
+  function applyCompanyRules(){
+    const isApple = els.company.value === "Apple";
+
+    els.typeName.disabled = isApple;
+    els.opsys.disabled = isApple;
+    els.gpu.disabled = isApple;
+
+    if(isApple){
+      els.typeName.value = "Notebook";
+      els.opsys.value = "Mac";
+      els.gpu.value = "Intel";
+    }
+  }
+
   // Builds the feature vector in the EXACT column order of the training data.
   function buildFeatureVector(){
     const ram = Number(els.ram.value);
@@ -241,6 +255,8 @@
   }
 
   function updateTicket(){
+    applyCompanyRules();
+
     els.ramOut.textContent = `${els.ram.value} GB`;
     els.weightOut.textContent = `${Number(els.weight.value).toFixed(2)} kg`;
 

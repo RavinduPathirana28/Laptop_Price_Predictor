@@ -199,6 +199,11 @@ a{ color: inherit; }
   box-shadow: 0 0 0 3px rgba(15, 140, 130, 0.15);
 }
 
+.field select:disabled{
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
 /* range slider for Ram / Weight */
 .range-row{
   display: flex;

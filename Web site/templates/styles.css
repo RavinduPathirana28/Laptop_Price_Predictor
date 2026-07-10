@@ -1,0 +1,479 @@
+/* ==========================================================================
+   Laptop Valuation — spec-sheet themed estimator
+   Tokens
+   ========================================================================== */
+:root{
+  --paper: #F5F6F2;
+  --paper-line: #DEE2DC;
+  --ink: #17212B;
+  --ink-soft: #4B5563;
+  --slate: #8B93A1;
+  --panel: #FFFFFF;
+  --panel-border: #E2E5E0;
+  --teal: #0F8C82;
+  --teal-deep: #0B6B63;
+  --amber: #E2A63A;
+  --amber-deep: #B9821F;
+  --danger: #C1503D;
+
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html{ scroll-behavior: smooth; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a{ color: inherit; }
+
+/* ==========================================================================
+   Shell
+   ========================================================================== */
+.shell{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.masthead{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 20px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.masthead .eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin: 0 0 8px;
+}
+
+.masthead h1{
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.masthead p{
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 40ch;
+  margin: 10px 0 0;
+}
+
+.masthead .model-tag{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--slate);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Layout: form + sticky ticket
+   ========================================================================== */
+.layout{
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 880px){
+  .layout{ grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   Form sections
+   ========================================================================== */
+.section{
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 22px 24px 26px;
+  margin-bottom: 20px;
+}
+
+.section-label{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin: 0 0 4px;
+}
+
+.section-title{
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.field-grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 20px;
+}
+
+@media (max-width: 520px){
+  .field-grid{ grid-template-columns: 1fr; }
+}
+
+.field{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field.span-2{ grid-column: span 2; }
+@media (max-width: 520px){ .field.span-2{ grid-column: span 1; } }
+
+.field label{
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+}
+
+.field label .unit{
+  font-family: var(--font-mono);
+  font-weight: 400;
+  color: var(--slate);
+  text-transform: none;
+}
+
+.field select,
+.field input[type="number"]{
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  appearance: none;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field select{
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+                     linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.field select:focus,
+.field input[type="number"]:focus{
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(15, 140, 130, 0.15);
+}
+
+/* range slider for Ram / Weight */
+.range-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.range-row input[type="range"]{
+  flex: 1;
+  accent-color: var(--teal);
+  height: 4px;
+}
+
+.range-row output{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  min-width: 52px;
+  text-align: right;
+  color: var(--ink);
+}
+
+/* toggle switches for Touchscreen / IPS */
+.toggle-row{
+  display: flex;
+  gap: 14px;
+}
+
+.toggle{
+  flex: 1;
+  position: relative;
+}
+
+.toggle input{
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.toggle .toggle-face{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--paper);
+  transition: all 0.15s ease;
+}
+
+.toggle .toggle-face::after{
+  content: "OFF";
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--slate);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.toggle input:checked + .toggle-face{
+  border-color: var(--teal);
+  color: var(--teal-deep);
+  background: rgba(15, 140, 130, 0.08);
+}
+
+.toggle input:checked + .toggle-face::after{
+  content: "ON";
+  color: var(--teal-deep);
+  border-color: var(--teal);
+}
+
+.toggle input:focus-visible + .toggle-face{
+  box-shadow: 0 0 0 3px rgba(15, 140, 130, 0.2);
+}
+
+/* ==========================================================================
+   Submit
+   ========================================================================== */
+.submit-row{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.btn-primary{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--ink);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 26px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn-primary:hover{ background: var(--teal-deep); }
+.btn-primary:active{ transform: translateY(1px); }
+
+.btn-primary:focus-visible{
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Valuation ticket (signature element)
+   ========================================================================== */
+.ticket-wrap{
+  position: sticky;
+  top: 24px;
+}
+
+.ticket{
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 30px -14px rgba(23, 33, 43, 0.25);
+}
+
+.ticket-head{
+  padding: 20px 24px 16px;
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.ticket-head .eyebrow{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 0 0 6px;
+}
+
+.ticket-head h2{
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin: 0;
+}
+
+.ticket-body{
+  padding: 16px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.ticket-line{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  color: var(--ink-soft);
+}
+
+.ticket-line .k{
+  white-space: nowrap;
+  color: var(--slate);
+}
+
+.ticket-line .v{
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+}
+
+.ticket-line .leader{
+  flex: 1;
+  border-bottom: 1px dotted var(--panel-border);
+  margin-bottom: 4px;
+}
+
+/* perforation */
+.perforation{
+  position: relative;
+  height: 0;
+  border-top: 2px dashed var(--panel-border);
+  margin: 4px 0;
+}
+
+.perforation::before,
+.perforation::after{
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+}
+
+.perforation::before{ left: -9px; }
+.perforation::after{ right: -9px; }
+
+.ticket-estimate{
+  padding: 20px 24px 26px;
+  text-align: right;
+  position: relative;
+}
+
+.ticket-estimate .label{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 0 0 6px;
+}
+
+.ticket-estimate .price{
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--teal-deep);
+  line-height: 1;
+  transition: opacity 0.2s ease;
+}
+
+.ticket-estimate .price.is-updating{ opacity: 0.35; }
+
+.ticket-estimate .price small{
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--slate);
+  margin-left: 4px;
+}
+
+.stamp{
+  position: absolute;
+  top: 14px;
+  left: 24px;
+  border: 2px solid var(--amber-deep);
+  color: var(--amber-deep);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transform: rotate(-6deg);
+  opacity: 0.85;
+}
+
+.status-line{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--slate);
+  margin-top: 12px;
+}
+
+.status-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--slate);
+}
+
+.status-dot.ok{ background: var(--teal); }
+.status-dot.err{ background: var(--danger); }
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; scroll-behavior: auto !important; }
+}
